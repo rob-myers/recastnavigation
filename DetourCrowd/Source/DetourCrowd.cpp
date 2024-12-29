@@ -1447,3 +1447,10 @@ void dtCrowd::update(const float dt, dtCrowdAgentDebugInfo* debug)
 	}
 	
 }
+
+dtCrowdAgentAnimation* dtCrowd::getAgentAnimation(const int idx)
+{
+	if (idx < 0 || idx >= m_maxAgents)
+		return 0;
+	return &m_agentAnims[idx];
+}

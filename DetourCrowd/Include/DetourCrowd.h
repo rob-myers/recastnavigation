@@ -317,6 +317,8 @@ public:
 	///  @param[out]	debug	A debug object to load with debug information. [Opt]
 	void update(const float dt, dtCrowdAgentDebugInfo* debug);
 	
+	dtCrowdAgentAnimation* getAgentAnimation(int idx);
+
 	/// Gets the filter used by the crowd.
 	/// @return The filter used by the crowd.
 	inline const dtQueryFilter* getFilter(const int i) const { return (i >= 0 && i < DT_CROWD_MAX_QUERY_FILTER_TYPE) ? &m_filters[i] : 0; }
