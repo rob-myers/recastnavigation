@@ -176,7 +176,7 @@ struct dtCrowdAgentAnimation
 	bool active;
 	float initPos[3], startPos[3], endPos[3];
 	dtPolyRef polyRef;
-	float t, tmax;
+	float t, tmid, tmax;
 };
 
 /// Crowd agent update flags.

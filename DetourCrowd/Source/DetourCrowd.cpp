@@ -1161,7 +1161,8 @@ void dtCrowd::update(const float dt, dtCrowdAgentDebugInfo* debug)
 				anim->polyRef = refs[1];
 				anim->active = true;
 				anim->t = 0.0f;
-				anim->tmax = (dtVdist2D(anim->startPos, anim->endPos) / ag->params.maxSpeed) * 0.5f;
+				anim->tmid = dtVdist2D(anim->initPos, anim->startPos) / ag->params.maxSpeed;
+				anim->tmax = anim->tmid + (dtVdist2D(anim->startPos, anim->endPos) / ag->params.maxSpeed);
 				
 				ag->state = DT_CROWDAGENT_STATE_OFFMESH;
 				ag->ncorners = 0;
@@ -1428,7 +1429,7 @@ void dtCrowd::update(const float dt, dtCrowdAgentDebugInfo* debug)
 		}
 		
 		// Update position
-		const float ta = anim->tmax*0.15f;
+		const float ta = anim->tmid;
 		const float tb = anim->tmax;
 		if (anim->t < ta)
 		{
