@@ -1425,6 +1425,12 @@ void dtCrowd::update(const float dt, dtCrowdAgentDebugInfo* debug)
 			anim->active = false;
 			// Prepare agent for walking.
 			ag->state = DT_CROWDAGENT_STATE_WALKING;
+
+			float delta[3];
+			dtVsub(delta, anim->endPos, anim->startPos);
+			dtVnormalize(delta);
+			dtVscale(ag->vel, delta, ag->params.maxSpeed);
+			dtVscale(ag->dvel, delta, ag->params.maxSpeed);
 			continue;
 		}
 		
