@@ -1075,7 +1075,7 @@ void dtCrowd::update(const float dt, dtCrowdAgentDebugInfo* debug)
 	for (int i = 0; i < nagents; ++i)
 	{
 		dtCrowdAgent* ag = agents[i];
-		if (ag->state != DT_CROWDAGENT_STATE_WALKING)
+		if (ag->state != DT_CROWDAGENT_STATE_WALKING && ag->state != DT_CROWDAGENT_STATE_OFFMESH)
 			continue;
 
 		// Update the collision boundary after certain distance has been passed or
