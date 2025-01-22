@@ -1350,6 +1350,12 @@ void dtCrowd::update(const float dt, dtCrowdAgentDebugInfo* debug)
 				float dist = dtVlenSqr(diff);
 				if (dist > dtSqr(ag->params.radius + nei->params.radius))
 					continue;
+				if (nei->state == DT_CROWDAGENT_STATE_OFFMESH) {
+					dtCrowdAgentAnimation* anim = &m_agentAnims[getAgentIndex(nei)];
+					if (anim->t < 0.5 * (anim->tmid + anim->tmax))
+						continue; // ignore initial segment of offMeshConnection traversal
+				}
+
 				dist = dtMathSqrtf(dist);
 				float pen = (ag->params.radius + nei->params.radius) - dist;
 				if (dist < 0.0001f)
