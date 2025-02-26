@@ -1163,6 +1163,8 @@ void dtCrowd::update(const float dt, dtCrowdAgentDebugInfo* debug)
 				anim->t = 0.0f;
 				anim->tmid = dtVdist2D(anim->initPos, anim->startPos) / ag->params.maxSpeed;
 				anim->tmax = anim->tmid + (dtVdist2D(anim->startPos, anim->endPos) / ag->params.maxSpeed);
+				dtVsub(anim->unitExitVel, anim->endPos, anim->startPos);
+				dtVnormalize(anim->unitExitVel);
 				
 				ag->state = DT_CROWDAGENT_STATE_OFFMESH;
 				ag->ncorners = 0;
@@ -1432,11 +1434,8 @@ void dtCrowd::update(const float dt, dtCrowdAgentDebugInfo* debug)
 			// Prepare agent for walking.
 			ag->state = DT_CROWDAGENT_STATE_WALKING;
 
-			float delta[3];
-			dtVsub(delta, anim->endPos, anim->startPos);
-			dtVnormalize(delta);
-			dtVscale(ag->vel, delta, ag->params.maxSpeed);
-			dtVscale(ag->dvel, delta, ag->params.maxSpeed);
+			dtVscale(ag->vel, anim->unitExitVel, ag->params.maxSpeed);
+			dtVscale(ag->dvel, anim->unitExitVel, ag->params.maxSpeed);
 			continue;
 		}
 		
