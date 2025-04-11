@@ -1426,7 +1426,7 @@ void dtCrowd::update(const float dt, dtCrowdAgentDebugInfo* debug)
 			continue;
 		
 
-		anim->t += dt;
+		anim->t += dt * anim->tScale;
 		if (anim->t > anim->tmax)
 		{
 			// Reset animation
