@@ -449,6 +449,7 @@ bool dtCrowd::init(const int maxAgents, const float maxAgentRadius, dtNavMesh* n
 	for (int i = 0; i < m_maxAgents; ++i)
 	{
 		m_agentAnims[i].active = false;
+		m_agentAnims[i].tScale = 1.0;
 	}
 
 	// The navquery is mostly used for local searches, no need for large node pool.
