@@ -644,6 +644,7 @@ void CrowdToolState::addAgent(const float* p)
 	dtCrowdAgentParams ap;
 	memset(&ap, 0, sizeof(ap));
 	ap.radius = m_sample->getAgentRadius();
+	ap.slowDownRadius = m_sample->getAgentRadius() * 2.0f;
 	ap.height = m_sample->getAgentHeight();
 	ap.maxAcceleration = 8.0f;
 	ap.maxSpeed = 3.5f;
