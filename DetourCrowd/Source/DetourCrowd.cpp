@@ -449,6 +449,7 @@ bool dtCrowd::init(const int maxAgents, const float maxAgentRadius, dtNavMesh* n
 	for (int i = 0; i < m_maxAgents; ++i)
 	{
 		m_agentAnims[i].active = false;
+		m_agentAnims[i].tScale = 1.0;
 	}
 
 	// The navquery is mostly used for local searches, no need for large node pool.
@@ -1163,6 +1164,8 @@ void dtCrowd::update(const float dt, dtCrowdAgentDebugInfo* debug)
 				anim->t = 0.0f;
 				anim->tmid = dtVdist2D(anim->initPos, anim->startPos) / ag->params.maxSpeed;
 				anim->tmax = anim->tmid + (dtVdist2D(anim->startPos, anim->endPos) / ag->params.maxSpeed);
+				dtVsub(anim->unitExitVel, anim->endPos, anim->startPos);
+				dtVnormalize(anim->unitExitVel);
 				
 				ag->state = DT_CROWDAGENT_STATE_OFFMESH;
 				ag->ncorners = 0;
@@ -1350,6 +1353,12 @@ void dtCrowd::update(const float dt, dtCrowdAgentDebugInfo* debug)
 				float dist = dtVlenSqr(diff);
 				if (dist > dtSqr(ag->params.radius + nei->params.radius))
 					continue;
+				if (nei->state == DT_CROWDAGENT_STATE_OFFMESH) {
+					dtCrowdAgentAnimation* anim = &m_agentAnims[getAgentIndex(nei)];
+					if (anim->t < 0.5 * (anim->tmid + anim->tmax))
+						continue; // ignore initial segment of offMeshConnection traversal
+				}
+
 				dist = dtMathSqrtf(dist);
 				float pen = (ag->params.radius + nei->params.radius) - dist;
 				if (dist < 0.0001f)
@@ -1418,7 +1427,7 @@ void dtCrowd::update(const float dt, dtCrowdAgentDebugInfo* debug)
 			continue;
 		
 
-		anim->t += dt;
+		anim->t += dt * anim->tScale;
 		if (anim->t > anim->tmax)
 		{
 			// Reset animation
@@ -1426,11 +1435,8 @@ void dtCrowd::update(const float dt, dtCrowdAgentDebugInfo* debug)
 			// Prepare agent for walking.
 			ag->state = DT_CROWDAGENT_STATE_WALKING;
 
-			float delta[3];
-			dtVsub(delta, anim->endPos, anim->startPos);
-			dtVnormalize(delta);
-			dtVscale(ag->vel, delta, ag->params.maxSpeed);
-			dtVscale(ag->dvel, delta, ag->params.maxSpeed);
+			dtVscale(ag->vel, anim->unitExitVel, ag->params.maxSpeed);
+			dtVscale(ag->dvel, anim->unitExitVel, ag->params.maxSpeed);
 			continue;
 		}
 		

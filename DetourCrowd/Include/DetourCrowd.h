@@ -176,8 +176,10 @@ struct dtCrowdAgentAnimation
 {
 	bool active;
 	float initPos[3], startPos[3], endPos[3];
+	/** Exit velocity as a unit vector */
+	float unitExitVel[3];
 	dtPolyRef polyRef;
-	float t, tmid, tmax;
+	float t, tmid, tmax, tScale;
 };
 
 /// Crowd agent update flags.
