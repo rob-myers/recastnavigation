@@ -74,6 +74,7 @@ enum CrowdAgentState
 struct dtCrowdAgentParams
 {
 	float radius;						///< Agent radius. [Limit: >= 0]
+	float slowDownRadius;						///< Agent slow down radius. [Limit: >= 0]
 	float height;						///< Agent height. [Limit: > 0]
 	float maxAcceleration;				///< Maximum allowed acceleration. [Limit: >= 0]
 	float maxSpeed;						///< Maximum allowed speed. [Limit: >= 0]
@@ -175,8 +176,10 @@ struct dtCrowdAgentAnimation
 {
 	bool active;
 	float initPos[3], startPos[3], endPos[3];
+	/** Exit velocity as a unit vector */
+	float unitExitVel[3];
 	dtPolyRef polyRef;
-	float t, tmax;
+	float t, tmid, tmax, tScale;
 };
 
 /// Crowd agent update flags.
@@ -317,6 +320,8 @@ public:
 	///  @param[out]	debug	A debug object to load with debug information. [Opt]
 	void update(const float dt, dtCrowdAgentDebugInfo* debug);
 	
+	dtCrowdAgentAnimation* getAgentAnimation(int idx);
+
 	/// Gets the filter used by the crowd.
 	/// @return The filter used by the crowd.
 	inline const dtQueryFilter* getFilter(const int i) const { return (i >= 0 && i < DT_CROWD_MAX_QUERY_FILTER_TYPE) ? &m_filters[i] : 0; }
