@@ -36,7 +36,7 @@ static const int DT_CROWDAGENT_MAX_NEIGHBOURS = 6;
 /// Due to the behavior of the crowd manager, the actual number of useful
 /// corners will be one less than this number.
 /// @ingroup crowd
-static const int DT_CROWDAGENT_MAX_CORNERS = 4;
+static const int DT_CROWDAGENT_MAX_CORNERS = 5;
 
 /// The maximum number of crowd avoidance configurations supported by the
 /// crowd manager.
