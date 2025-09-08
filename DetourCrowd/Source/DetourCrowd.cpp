@@ -1144,73 +1144,31 @@ void dtCrowd::update(const float dt, dtCrowdAgentDebugInfo* debug)
 			continue;
 		if (ag->targetState == DT_CROWDAGENT_TARGET_NONE || ag->targetState == DT_CROWDAGENT_TARGET_VELOCITY)
 			continue;
-		
-		// We support two offMeshConnection trigger radii:
-		//
-		// The outer `triggerRadius`
-		// - is triggered once when ag->preOffMesh false
-		// - computes dtCrowdAgentAnimation as before but does not activate it
-		// - instead of state := DT_CROWDAGENT_STATE_OFFMESH, sets ag->preOffMesh := true
-		//
-		// The inner `smallTriggerRadius`
-		// - is triggered some time after `triggerRadius` was, when ag->preOffMesh true
-		// - mutates (initPos, tmid, tmax) and activates dtCrowdAgentAnimation
-		// - sets state := DT_CROWDAGENT_STATE_OFFMESH, ag->preOffMesh := false
-		//
-		// The browser app can detect when ag->preOffMesh true and improve dtCrowdAgentAnimation,
-		// e.g. making it compatible with enter/exit direction.
-		// It could also change the corner appropriately.
 
-		const float smallTriggerRadius = ag->params.radius*0.5f;
 		const float triggerRadius = ag->params.radius*2.25f;
 
-		if (overOffmeshConnection(ag, smallTriggerRadius)) {
-
-			const int idx = (int)(ag - m_agents);
-			dtCrowdAgentAnimation* anim = &m_agentAnims[idx];
-
-			dtPolyRef refs[2];
-			// 🚧 currently overwrites startPos, endPos which may been improved
-			// 🚧 create a new function which only prunes the path
-			// Adjust the path over the off-mesh connection.
-			ag->corridor.moveOverOffmeshConnection(ag->cornerPolys[ag->ncorners-1], refs, anim->startPos, anim->endPos, m_navquery);
-
-			dtVcopy(anim->initPos, ag->npos);
-			anim->active = true;
-			anim->polyRef = refs[1];
-			anim->t = 0.0f;
-			anim->tmid = dtVdist2D(anim->initPos, anim->startPos) / ag->params.maxSpeed;
-			anim->tmax = anim->tmid + (dtVdist2D(anim->startPos, anim->endPos) / ag->params.maxSpeed);
-
-			ag->state = DT_CROWDAGENT_STATE_OFFMESH;
-			ag->ncorners = 0;
-			ag->nneis = 0;
-			ag->preOffMesh = false;
-
-		} else if (!ag->preOffMesh && overOffmeshConnection(ag, triggerRadius))
-		{
-			ag->preOffMesh = true;
+		if (overOffmeshConnection(ag, triggerRadius)) {
 
 			// Prepare to off-mesh connection.
 			const int idx = (int)(ag - m_agents);
 			dtCrowdAgentAnimation* anim = &m_agentAnims[idx];
 
 			dtPolyRef refs[2];
-			if (ag->corridor.computeOffmeshRefEnds(ag->cornerPolys[ag->ncorners-1], refs,
+			if (ag->corridor.moveOverOffmeshConnection(ag->cornerPolys[ag->ncorners-1], refs,
 													   anim->startPos, anim->endPos, m_navquery))
 			{
 				dtVcopy(anim->initPos, ag->npos);
 				anim->polyRef = refs[1];
-				// anim->active = true;
+				anim->active = true;
 				anim->t = 0.0f;
 				anim->tmid = dtVdist2D(anim->initPos, anim->startPos) / ag->params.maxSpeed;
 				anim->tmax = anim->tmid + (dtVdist2D(anim->startPos, anim->endPos) / ag->params.maxSpeed);
 				dtVsub(anim->unitExitVel, anim->endPos, anim->startPos);
 				dtVnormalize(anim->unitExitVel);
 				
-				// ag->state = DT_CROWDAGENT_STATE_OFFMESH;
-				// ag->ncorners = 0;
-				// ag->nneis = 0;
+				ag->state = DT_CROWDAGENT_STATE_OFFMESH;
+				ag->ncorners = 0;
+				ag->nneis = 0;
 				continue;
 			}
 			else
